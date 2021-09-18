@@ -2,7 +2,7 @@
 # pod trunk push WCDB.swift.podspec --verbose
 Pod::Spec.new do |wcdb|
   wcdb.name         = "HWCDB.swift"
-  wcdb.version      = "0.0.7"
+  wcdb.version      = "0.0.8"
   wcdb.summary      = "WCDB is a cross-platform database framework developed by WeChat."
   wcdb.description  = <<-DESC
                       The WeChat Database, for Swift. (If you want to use WCDB from Objective-C, see the "WCDB" pod.)
@@ -23,9 +23,7 @@ Pod::Spec.new do |wcdb|
   wcdb.libraries = "z"
   wcdb.requires_arc = true
   wcdb.prepare_command = "git submodule update --init sqlcipher; \
-                          cd tools/templates; sh install.sh; cd ../..; \
-                          cd sqlcipher; make -f Makefile.preprocessed; cd ..; \
-                          cp sqlcipher/ext/fts3/fts3_tokenizer.h sqlcipher/"
+                          cd tools/templates; sh install.sh; cd ../..;"
   wcdb.pod_target_xcconfig = { 'SWIFT_WHOLE_MODULE_OPTIMIZATION' => 'YES',
                                'APPLICATION_EXTENSION_API_ONLY' => 'YES' }
   wcdb.xcconfig = {

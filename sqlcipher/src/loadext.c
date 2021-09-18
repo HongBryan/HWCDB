@@ -18,6 +18,7 @@
 #endif
 #include "sqlite3ext.h"
 #include "sqliteInt.h"
+#include <string.h>
 
 #ifndef SQLITE_OMIT_LOAD_EXTENSION
 /*
@@ -51,7 +52,6 @@
 # define sqlite3_open16                 0
 # define sqlite3_prepare16              0
 # define sqlite3_prepare16_v2           0
-# define sqlite3_prepare16_v3           0
 # define sqlite3_result_error16         0
 # define sqlite3_result_text16          0
 # define sqlite3_result_text16be        0
@@ -84,7 +84,6 @@
 # define sqlite3_declare_vtab 0
 # define sqlite3_vtab_config 0
 # define sqlite3_vtab_on_conflict 0
-# define sqlite3_vtab_collation 0
 #endif
 
 #ifdef SQLITE_OMIT_SHARED_CACHE
@@ -130,6 +129,27 @@
 ** also check to make sure that the pointer to the function is
 ** not NULL before calling it.
 */
+#ifdef SQLITE_HAS_CODEC
+static const sqlcipher_api_routines sqlcipherApis = {
+  sqlcipher_register_provider,
+  sqlcipher_get_provider,
+  sqlite3_key,
+  sqlite3_key_v2,
+  sqlite3_rekey,
+  sqlite3_rekey_v2,
+
+#ifdef SQLCIPHER_CRYPTO_CUSTOM
+  sqlcipher_register_custom_provider,
+  sqlcipher_unregister_custom_provider,
+  sqlcipher_get_fallback_provider,
+#else
+  0,
+  0,
+  0,
+#endif
+};
+#endif
+
 static const sqlite3_api_routines sqlite3Apis = {
   sqlite3_aggregate_context,
 #ifndef SQLITE_OMIT_DEPRECATED
@@ -202,7 +222,15 @@ static const sqlite3_api_routines sqlite3Apis = {
   sqlite3_get_autocommit,
   sqlite3_get_auxdata,
   sqlite3_get_table,
-  0,     /* Was sqlite3_global_recover(), but that function is deprecated */
+
+#ifdef SQLITE_HAS_CODEC  
+  /* Was sqlite3_global_recover(), but that function is deprecated.
+     We 'steal' this slot to place pointers to SQLCipher APIs. */
+  &sqlcipherApis,
+#else
+  0,
+#endif
+  
   sqlite3_interrupt,
   sqlite3_last_insert_rowid,
   sqlite3_libversion,
@@ -423,42 +451,7 @@ static const sqlite3_api_routines sqlite3Apis = {
   sqlite3_system_errno,
   /* Version 3.14.0 and later */
   sqlite3_trace_v2,
-  sqlite3_expanded_sql,
-  /* Version 3.18.0 and later */
-  sqlite3_set_last_insert_rowid,
-  /* Version 3.20.0 and later */
-  sqlite3_prepare_v3,
-  sqlite3_prepare16_v3,
-  sqlite3_bind_pointer,
-  sqlite3_result_pointer,
-  sqlite3_value_pointer,
-  /* Version 3.22.0 and later */
-  sqlite3_vtab_nochange,
-  sqlite3_value_nochange,
-  sqlite3_vtab_collation,
-  /* Version 3.24.0 and later */
-  sqlite3_keyword_count,
-  sqlite3_keyword_name,
-  sqlite3_keyword_check,
-  sqlite3_str_new,
-  sqlite3_str_finish,
-  sqlite3_str_appendf,
-  sqlite3_str_vappendf,
-  sqlite3_str_append,
-  sqlite3_str_appendall,
-  sqlite3_str_appendchar,
-  sqlite3_str_reset,
-  sqlite3_str_errcode,
-  sqlite3_str_length,
-  sqlite3_str_value,
-  /* Version 3.25.0 and later */
-  sqlite3_create_window_function,
-  /* Version 3.26.0 and later */
-#ifdef SQLITE_ENABLE_NORMALIZE
-  sqlite3_normalized_sql
-#else
-  0
-#endif
+  sqlite3_expanded_sql
 };
 
 /*

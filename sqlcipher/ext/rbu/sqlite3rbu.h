@@ -308,7 +308,7 @@ typedef struct sqlite3rbu sqlite3rbu;
 ** not work out of the box with zipvfs. Refer to the comment describing
 ** the zipvfs_create_vfs() API below for details on using RBU with zipvfs.
 */
-SQLITE_API sqlite3rbu *sqlite3rbu_open(
+sqlite3rbu *sqlite3rbu_open(
   const char *zTarget, 
   const char *zRbu,
   const char *zState
@@ -347,32 +347,10 @@ SQLITE_API sqlite3rbu *sqlite3rbu_open(
 ** a description of the complications associated with using RBU with 
 ** zipvfs databases.
 */
-SQLITE_API sqlite3rbu *sqlite3rbu_vacuum(
+sqlite3rbu *sqlite3rbu_vacuum(
   const char *zTarget, 
   const char *zState
 );
-
-/*
-** Configure a limit for the amount of temp space that may be used by
-** the RBU handle passed as the first argument. The new limit is specified
-** in bytes by the second parameter. If it is positive, the limit is updated.
-** If the second parameter to this function is passed zero, then the limit
-** is removed entirely. If the second parameter is negative, the limit is
-** not modified (this is useful for querying the current limit).
-**
-** In all cases the returned value is the current limit in bytes (zero 
-** indicates unlimited).
-**
-** If the temp space limit is exceeded during operation, an SQLITE_FULL
-** error is returned.
-*/
-SQLITE_API sqlite3_int64 sqlite3rbu_temp_size_limit(sqlite3rbu*, sqlite3_int64);
-
-/*
-** Return the current amount of temp file space, in bytes, currently used by 
-** the RBU handle passed as the only argument.
-*/
-SQLITE_API sqlite3_int64 sqlite3rbu_temp_size(sqlite3rbu*);
 
 /*
 ** Internally, each RBU connection uses a separate SQLite database 
@@ -405,7 +383,7 @@ SQLITE_API sqlite3_int64 sqlite3rbu_temp_size(sqlite3rbu*);
 ** Database handles returned by this function remain valid until the next
 ** call to any sqlite3rbu_xxx() function other than sqlite3rbu_db().
 */
-SQLITE_API sqlite3 *sqlite3rbu_db(sqlite3rbu*, int bRbu);
+sqlite3 *sqlite3rbu_db(sqlite3rbu*, int bRbu);
 
 /*
 ** Do some work towards applying the RBU update to the target db. 
@@ -419,7 +397,7 @@ SQLITE_API sqlite3 *sqlite3rbu_db(sqlite3rbu*, int bRbu);
 ** SQLITE_OK, all subsequent calls on the same RBU handle are no-ops
 ** that immediately return the same value.
 */
-SQLITE_API int sqlite3rbu_step(sqlite3rbu *pRbu);
+int sqlite3rbu_step(sqlite3rbu *pRbu);
 
 /*
 ** Force RBU to save its state to disk.
@@ -431,7 +409,7 @@ SQLITE_API int sqlite3rbu_step(sqlite3rbu *pRbu);
 **
 ** SQLITE_OK is returned if successful, or an SQLite error code otherwise.
 */
-SQLITE_API int sqlite3rbu_savestate(sqlite3rbu *pRbu);
+int sqlite3rbu_savestate(sqlite3rbu *pRbu);
 
 /*
 ** Close an RBU handle. 
@@ -442,23 +420,23 @@ SQLITE_API int sqlite3rbu_savestate(sqlite3rbu *pRbu);
 **
 ** If an error has already occurred as part of an sqlite3rbu_step()
 ** or sqlite3rbu_open() call, or if one occurs within this function, an
-** SQLite error code is returned. Additionally, if pzErrmsg is not NULL,
-** *pzErrmsg may be set to point to a buffer containing a utf-8 formatted
-** English language error message. It is the responsibility of the caller to
-** eventually free any such buffer using sqlite3_free().
+** SQLite error code is returned. Additionally, *pzErrmsg may be set to
+** point to a buffer containing a utf-8 formatted English language error
+** message. It is the responsibility of the caller to eventually free any 
+** such buffer using sqlite3_free().
 **
 ** Otherwise, if no error occurs, this function returns SQLITE_OK if the
 ** update has been partially applied, or SQLITE_DONE if it has been 
 ** completely applied.
 */
-SQLITE_API int sqlite3rbu_close(sqlite3rbu *pRbu, char **pzErrmsg);
+int sqlite3rbu_close(sqlite3rbu *pRbu, char **pzErrmsg);
 
 /*
 ** Return the total number of key-value operations (inserts, deletes or 
 ** updates) that have been performed on the target database since the
 ** current RBU update was started.
 */
-SQLITE_API sqlite3_int64 sqlite3rbu_progress(sqlite3rbu *pRbu);
+sqlite3_int64 sqlite3rbu_progress(sqlite3rbu *pRbu);
 
 /*
 ** Obtain permyriadage (permyriadage is to 10000 as percentage is to 100) 
@@ -500,7 +478,7 @@ SQLITE_API sqlite3_int64 sqlite3rbu_progress(sqlite3rbu *pRbu);
 ** table exists but is not correctly populated, the value of the *pnOne
 ** output variable during stage 1 is undefined.
 */
-SQLITE_API void sqlite3rbu_bp_progress(sqlite3rbu *pRbu, int *pnOne, int*pnTwo);
+void sqlite3rbu_bp_progress(sqlite3rbu *pRbu, int *pnOne, int *pnTwo);
 
 /*
 ** Obtain an indication as to the current stage of an RBU update or vacuum.
@@ -538,7 +516,7 @@ SQLITE_API void sqlite3rbu_bp_progress(sqlite3rbu *pRbu, int *pnOne, int*pnTwo);
 #define SQLITE_RBU_STATE_DONE       4
 #define SQLITE_RBU_STATE_ERROR      5
 
-SQLITE_API int sqlite3rbu_state(sqlite3rbu *pRbu);
+int sqlite3rbu_state(sqlite3rbu *pRbu);
 
 /*
 ** Create an RBU VFS named zName that accesses the underlying file-system
@@ -582,7 +560,7 @@ SQLITE_API int sqlite3rbu_state(sqlite3rbu *pRbu);
 ** file-system via "rbu" all the time, even if it only uses RBU functionality 
 ** occasionally.
 */
-SQLITE_API int sqlite3rbu_create_vfs(const char *zName, const char *zParent);
+int sqlite3rbu_create_vfs(const char *zName, const char *zParent);
 
 /*
 ** Deregister and destroy an RBU vfs created by an earlier call to
@@ -592,7 +570,7 @@ SQLITE_API int sqlite3rbu_create_vfs(const char *zName, const char *zParent);
 ** before all database handles that use it have been closed, the results
 ** are undefined.
 */
-SQLITE_API void sqlite3rbu_destroy_vfs(const char *zName);
+void sqlite3rbu_destroy_vfs(const char *zName);
 
 #ifdef __cplusplus
 }  /* end of the 'extern "C"' block */
