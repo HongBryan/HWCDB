@@ -12,7 +12,7 @@ Pod::Spec.new do |wcdb|
                       DESC
   wcdb.homepage     = "https://github.com/HongBryan/HWCDB"
   wcdb.license      = { :type => "BSD", :file => "LICENSE"}
-  wcdb.author             = { "sanhuazhang" => "sanhuazhang@tencent.com" }
+  wcdb.author             = { "HongBryan" => "185078974@qq.com" }
   wcdb.ios.deployment_target = "8.0"
   wcdb.osx.deployment_target = "10.9"
   wcdb.watchos.deployment_target = "2.0"
