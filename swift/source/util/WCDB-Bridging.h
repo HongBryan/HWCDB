@@ -19,9 +19,9 @@
  */
 
 #import <WCDBSwift/SQLite-Bridging.h>
-
-#ifdef WCDB_COCOAPODS
 #import <WCDBSwift/SQLiteRepairKit.h>
-#else //WCDB_COCOAPODS
-#import <sqliterk/SQLiteRepairKit.h>
-#endif //WCDB_COCOAPODS
+//#ifdef WCDB_COCOAPODS
+//#import <WCDBSwift/SQLiteRepairKit.h>
+//#else //WCDB_COCOAPODS
+//#import <sqliterk/SQLiteRepairKit.h>
+//#endif //WCDB_COCOAPODS
